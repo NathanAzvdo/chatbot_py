@@ -3,6 +3,7 @@ import json
 from dotenv import load_dotenv
 import os
 from coinAPI import CoinsAPI
+import re
 
 coins_info = CoinsAPI()
 
@@ -19,6 +20,20 @@ bot = telebot.TeleBot(bot_key)
 def verificar(mensagem):
     return True
 
+@bot.message_handler(commands=["converter"])
+def converter(mensagem):
+    try:
+        amount, base_currency, target_currency = parse_conversion_command(mensagem.text)
+        valor = calcularConversao(base_currency, target_currency, int(amount))
+        if valor:
+            bot.send_message(mensagem.chat.id, valor)
+        else:
+            bot.send_message(mensagem.chat.id, "lelelel")
+    except Exception as e: 
+        print(e)
+        bot.send_message(mensagem.chat.id, "alalalla")
+        
+            
 @bot.message_handler(commands=["moedas"])
 def moedas(mensagem):
     try:
@@ -55,6 +70,30 @@ def formata_mensagem_cotacao(informacoes):
         baixa= informacoes["baixa"]
     )
     return msg
+
+def parse_conversion_command(command):
+    pattern = r'/converter (\d+(?:\.\d+)?) (\w+)-(\w+)'
+    match = re.match(pattern, command)
+    
+    if match:
+        amount = float(match.group(1))
+        base_currency = match.group(2)
+        target_currency = match.group(3)
+        return amount, base_currency, target_currency
+    else:
+        return None, None, None
+
+def calcularConversao(moedaB, moedaS, valor):
+    try:
+        buscaCotacao = coins_info.return_cotation(moedaB.upper(), moedaS.upper())
+        valorMoeda = json.loads(buscaCotacao)  # Removido o .decode('utf-8'), pois loads já retorna um objeto Python
+        venda = float(valorMoeda["ask"])
+        valorFinal = float(valor)*venda
+        return f"{valorFinal:.2f}"
+    except Exception as e:
+        print(f"Erro ao calcular conversão: {e}")
+        return None
+
 
 def separar_moedas_msg(msg):
     partes = msg.text.split()
