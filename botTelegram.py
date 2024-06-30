@@ -24,14 +24,16 @@ def verificar(mensagem):
 def converter(mensagem):
     try:
         amount, base_currency, target_currency = parse_conversion_command(mensagem.text)
-        valor = calcularConversao(base_currency, target_currency, int(amount))
+        buscaCotacao = coins_info.return_cotation(base_currency.upper(), target_currency.upper())
+        valor = calcularConversao(buscaCotacao, int(amount))
+        msg = formata_mensagem_conversao(json.loads(buscaCotacao), valor)
         if valor:
-            bot.send_message(mensagem.chat.id, valor)
+            bot.send_message(mensagem.chat.id, msg)
         else:
-            bot.send_message(mensagem.chat.id, "lelelel")
+            bot.send_message(mensagem.chat.id, bot_message["mensagem_erro"])
     except Exception as e: 
         print(e)
-        bot.send_message(mensagem.chat.id, "alalalla")
+        bot.send_message(mensagem.chat.id, bot_message["mensagem_erro"])
         
             
 @bot.message_handler(commands=["moedas"])
@@ -71,6 +73,17 @@ def formata_mensagem_cotacao(informacoes):
     )
     return msg
 
+def formata_mensagem_conversao(informacoes, valor):
+    msg = bot_message["mensagem_conversao"].format(
+        nome= informacoes["nome"],
+        bid= informacoes["bid"],
+        ask= informacoes["ask"],
+        alta= informacoes["alta"],
+        baixa= informacoes["baixa"],
+        conv = valor
+    )
+    return msg
+
 def parse_conversion_command(command):
     pattern = r'/converter (\d+(?:\.\d+)?) (\w+)-(\w+)'
     match = re.match(pattern, command)
@@ -83,13 +96,12 @@ def parse_conversion_command(command):
     else:
         return None, None, None
 
-def calcularConversao(moedaB, moedaS, valor):
+def calcularConversao(cotacao, valor):
     try:
-        buscaCotacao = coins_info.return_cotation(moedaB.upper(), moedaS.upper())
-        valorMoeda = json.loads(buscaCotacao)  # Removido o .decode('utf-8'), pois loads já retorna um objeto Python
+        valorMoeda = json.loads(cotacao)
         venda = float(valorMoeda["ask"])
         valorFinal = float(valor)*venda
-        return f"{valorFinal:.2f}"
+        return valorFinal
     except Exception as e:
         print(f"Erro ao calcular conversão: {e}")
         return None
