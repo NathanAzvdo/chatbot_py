@@ -1,0 +1,25 @@
+{
+    "mensagem":"🌐 Conversor de Moedas - Seu Assistente Financeiro no Telegram 🌐\n\nAbaixo, você encontrará uma lista das principais combinações disponíveis no nosso bot para converter moedas. Estamos sempre adicionando novas opções para garantir que você possa converter entre diversas moedas importantes ao redor do mundo. Explore e simplifique suas conversões monetárias com facilidade!",
+    "moedas":{
+        "USD-BRL": " Dólar dos Estados Unidos para Real Brasileiro",
+        "USD-EUR": " Dólar dos Estados Unidos para Euro",
+        "USD-BTC": " Dólar dos Estados Unidos para Bitcoin",
+        "USD-ETH": " Dólar dos Estados Unidos para Ethereum",
+        "EUR-USD": " Euro para Dólar dos Estados Unidos",
+        "EUR-BRL": " Euro para Real Brasileiro",
+        "EUR-BTC": " Euro para Bitcoin",
+        "EUR-ETH": " Euro para Ethereum",
+        "BRL-USD": " Real Brasileiro para Dólar dos Estados Unidos",
+        "BRL-EUR": " Real Brasileiro para Euro",
+        "BRL-BTC": " Real Brasileiro para Bitcoin",
+        "BRL-ETH": " Real Brasileiro para Ethereum",
+        "BTC-USD": " Bitcoin para Dólar dos Estados Unidos",
+        "BTC-EUR": " Bitcoin para Euro",
+        "BTC-BRL": " Bitcoin para Real Brasileiro",
+        "BTC-ETH": " Bitcoin para Ethereum",
+        "ETH-USD": " Ethereum para Dólar dos Estados Unidos",
+        "ETH-EUR": " Ethereum para Euro",
+        "ETH-BRL": " Ethereum para Real Brasileiro",
+        "ETH-BTC": " Ethereum para Bitcoin"
+    }
+}
