@@ -29,19 +29,22 @@ def moedas(mensagem):
             texto_mensagem += f"{chave}: {valor}\n"
         bot.send_message(mensagem.chat.id, texto_mensagem)
     except Exception as e:
-        bot.send_message(mensagem.chat.id, f"Ocorreu um erro ao processar sua solicitação: {str(e)}")
+        bot.send_message(mensagem.chat.id, bot_message["mensagem_erro"])
 
 
 @bot.message_handler(commands=["cotacao"])
 def cotacao(mensagem):
-        moeda = separar_moedas_msg(mensagem)
-        if moeda:
-            moeda1, moeda2 = moeda
-            info = coins_info.return_cotation(moeda1, moeda2)
-            msg = formata_mensagem_cotacao(json.loads(info))
-            bot.send_message(mensagem.chat.id, msg)
-        else:
-            bot.send_message(mensagem.chat.id, bot_message["mensagem_erro"])   
+        try:
+            moeda = separar_moedas_msg(mensagem)
+            if moeda:
+                moeda1, moeda2 = moeda
+                info = coins_info.return_cotation(moeda1.upper(), moeda2.upper())
+                msg = formata_mensagem_cotacao(json.loads(info))
+                bot.send_message(mensagem.chat.id, msg)
+            else:
+                bot.send_message(mensagem.chat.id, bot_message["mensagem_erro"])
+        except Exception as e:
+                bot.send_message(mensagem.chat.id, bot_message["mensagem_erro"])
 
 def formata_mensagem_cotacao(informacoes):
     msg = bot_message["mensagem_cotacao"].format(
