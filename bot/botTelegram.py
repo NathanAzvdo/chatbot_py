@@ -24,7 +24,7 @@ class TelegramBot:
                 buscaCotacao = self.coins_info.return_cotation(base_currency.upper(), target_currency.upper())
                 valor = self.calcularConversao(buscaCotacao, int(amount))
                 msg = self.formata_mensagem_conversao(json.loads(buscaCotacao), valor)
-                if valor:
+                if valor and msg:
                     self.bot.send_message(mensagem.chat.id, msg)
                 else:
                     self.bot.send_message(mensagem.chat.id, self.bot_message["mensagem_erro"])

@@ -2,6 +2,9 @@ import unittest
 from coinAPI import CoinsAPI
 from unittest.mock import patch, MagicMock
 import json
+from faker import Faker
+
+faker = Faker()
 
 class CoinsAPI_Test(unittest.TestCase):
     
@@ -23,7 +26,6 @@ class CoinsAPI_Test(unittest.TestCase):
         }
         mock_get.return_value = mock_response
 
-        # Chama a função que você deseja testar
         result = CoinsAPI.return_cotation(None, 'USD', 'BRL')
         expected_result = json.dumps({
             'nome': 'Dollar/Real',
@@ -57,4 +59,21 @@ class CoinsAPI_Test(unittest.TestCase):
         result = CoinsAPI.return_cotation(None, 'USD', 'BRL')
 
         self.assertTrue(result.startswith('Erro:Test Exception'))
+        
+    @patch.dict('os.environ', {'COINS_API': 'https://api.example.com/data/'})
+    def test_return_url_coins(self):
+        string1 = faker.lexify('??')
+        string2 = faker.lexify('??')
+        url = CoinsAPI.return_url_coins(string1, string2)
+        expected_url = f'https://api.example.com/data/{string1}-{string2}'
+        self.assertEqual(url, expected_url)
 
+    @patch.dict('os.environ', {}, clear=True)
+    def test_coins_api_not_defined(self):
+        string1 = faker.lexify('??')
+        string2 = faker.lexify('??')
+    
+        url = CoinsAPI.return_url_coins(string1, string2)
+        self.assertTrue(url.startswith("Erro:"))
+        
+    
