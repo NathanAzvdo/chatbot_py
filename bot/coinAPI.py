@@ -8,10 +8,10 @@ class CoinsAPI:
 
 
     load_dotenv()
-    url_connect_api = os.getenv("COINS_API")
+    
 
     def return_url_coins(moedaPrim, moedaSec):
-        url = (f"https://economia.awesomeapi.com.br/json/last/{moedaPrim}-{moedaSec}")
+        url = os.getenv("COINS_API")+f'{moedaPrim}-{moedaSec}'
         return url
     
     def return_cotation(*args, **kwargs):
