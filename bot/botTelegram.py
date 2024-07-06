@@ -1,14 +1,16 @@
 import telebot
 import json
-from dotenv import load_dotenv
-import os
 import re
-from .coinAPI import CoinsAPI
+from .coinAPI_factory import CoinsAPIFactory
+from .formatters.message_formatter import MessageFormatter, ConversionCalculator
 
 class TelegramBot:
     def __init__(self, bot_key):
         self.bot = telebot.TeleBot(bot_key)
-        self.coins_info = CoinsAPI()
+        self.api_factory = CoinsAPIFactory()
+        self.coins_info = self.api_factory.get_api()
+        self.formatter = MessageFormatter()
+        self.calculator = ConversionCalculator()
 
         with open("messages.json", "r", encoding="utf-8") as file1, open("moedas.json", "r", encoding="utf-8") as file2:
             self.bot_message = json.load(file1)
@@ -21,9 +23,9 @@ class TelegramBot:
         def converter(mensagem):
             try:
                 amount, base_currency, target_currency = self.parse_conversion_command(mensagem.text)
-                buscaCotacao = self.coins_info.return_cotation(base_currency.upper(), target_currency.upper())
-                valor = self.calcularConversao(buscaCotacao, int(amount))
-                msg = self.formata_mensagem_conversao(json.loads(buscaCotacao), valor)
+                cotacao = self.coins_info.return_cotation(base_currency.upper(), target_currency.upper())
+                valor = self.calculator.calcular(cotacao, int(amount))
+                msg = self.formatter.format_conversion(cotacao, valor, self.bot_message["mensagem_conversao"])
                 if valor and msg:
                     self.bot.send_message(mensagem.chat.id, msg)
                 else:
@@ -51,7 +53,7 @@ class TelegramBot:
                 if moeda:
                     moeda1, moeda2 = moeda
                     info = self.coins_info.return_cotation(moeda1.upper(), moeda2.upper())
-                    msg = self.formata_mensagem_cotacao(json.loads(info))
+                    msg = self.formatter.format_cotation(info, self.bot_message["mensagem_cotacao"])
                     self.bot.send_message(mensagem.chat.id, msg)
                 else:
                     self.bot.send_message(mensagem.chat.id, self.bot_message["mensagem_erro"])
@@ -61,27 +63,6 @@ class TelegramBot:
         @self.bot.message_handler(func=self.verificar)
         def responder_mensagem(mensagem):
             self.bot.reply_to(mensagem, self.bot_message["mensagem_receptiva"])
-
-    def formata_mensagem_cotacao(self, informacoes):
-        msg = self.bot_message["mensagem_cotacao"].format(
-            nome=informacoes["nome"],
-            bid=informacoes["bid"],
-            ask=informacoes["ask"],
-            alta=informacoes["alta"],
-            baixa=informacoes["baixa"]
-        )
-        return msg
-
-    def formata_mensagem_conversao(self, informacoes, valor):
-        msg = self.bot_message["mensagem_conversao"].format(
-            nome=informacoes["nome"],
-            bid=informacoes["bid"],
-            ask=informacoes["ask"],
-            alta=informacoes["alta"],
-            baixa=informacoes["baixa"],
-            conv=valor
-        )
-        return msg
 
     def parse_conversion_command(self, command):
         pattern = r'/converter (\d+(?:\.\d+)?) (\w+)-(\w+)'
@@ -94,16 +75,6 @@ class TelegramBot:
             return amount, base_currency, target_currency
         else:
             return None, None, None
-
-    def calcularConversao(self, cotacao, valor):
-        try:
-            valorMoeda = json.loads(cotacao)
-            venda = float(valorMoeda["ask"])
-            valorFinal = float(valor) * venda
-            return valorFinal
-        except Exception as e:
-            print(f"Erro ao calcular conversão: {e}")
-            return None
 
     def separar_moedas_msg(self, msg):
         partes = msg.text.split()

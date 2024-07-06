@@ -1,5 +1,5 @@
 import unittest
-from coinAPI import CoinsAPI
+from bot.coinAPI_factory import CoinsAPI
 from unittest.mock import patch, MagicMock
 import json
 from faker import Faker
