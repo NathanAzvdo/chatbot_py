@@ -25,15 +25,15 @@ class TelegramBot:
                 amount, base_currency, target_currency = self.parse_conversion_command(mensagem.text)
                 cotacao = self.coins_info.return_cotation(base_currency.upper(), target_currency.upper())
                 valor = self.calculator.calcular(cotacao, int(amount))
-                msg = self.formatter.format_conversion(cotacao, valor, self.bot_message["mensagem_conversao"])
+                msg = self.formatter.format_conversion(cotacao, valor, self.bot_message["mensagens_info"])
                 if valor and msg:
                     self.bot.send_message(mensagem.chat.id, msg)
                 else:
                     self.bot.send_message(mensagem.chat.id, self.bot_message["mensagem_erro"])
-            except Exception as e: 
+            except Exception as e:
                 print(e)
                 self.bot.send_message(mensagem.chat.id, self.bot_message["mensagem_erro"])
-        
+
         @self.bot.message_handler(commands=["moedas"])
         def moedas(mensagem):
             try:
@@ -53,7 +53,7 @@ class TelegramBot:
                 if moeda:
                     moeda1, moeda2 = moeda
                     info = self.coins_info.return_cotation(moeda1.upper(), moeda2.upper())
-                    msg = self.formatter.format_cotation(info, self.bot_message["mensagem_cotacao"])
+                    msg = self.formatter.format_cotation(info, self.bot_message["mensagens_info"])
                     self.bot.send_message(mensagem.chat.id, msg)
                 else:
                     self.bot.send_message(mensagem.chat.id, self.bot_message["mensagem_erro"])

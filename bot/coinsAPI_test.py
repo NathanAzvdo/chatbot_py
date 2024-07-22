@@ -1,5 +1,5 @@
 import unittest
-from bot.coinAPI_factory import CoinsAPI
+from coinAPI import CoinsAPI
 from unittest.mock import patch, MagicMock
 import json
 from faker import Faker
@@ -8,7 +8,6 @@ faker = Faker()
 
 class CoinsAPI_Test(unittest.TestCase):
     
-    coinAPI = CoinsAPI()
 
     @patch('requests.get')
     def test_return_cotation_success(self, mock_get):
