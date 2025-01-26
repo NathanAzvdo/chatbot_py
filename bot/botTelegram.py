@@ -1,5 +1,7 @@
 import telebot
 import json
+from dotenv import load_dotenv
+import os
 import re
 from .coinAPI_factory import CoinsAPIFactory
 from .formatters.message_formatter import MessageFormatter, ConversionCalculator
@@ -95,5 +97,18 @@ class TelegramBot:
     def verificar(self, mensagem):
         return True
 
+    def start_keep_alive(self):
+        def keep_alive():
+            while True:
+                try:
+                    self.bot.send_chat_action(chat_id=os.getenv("CHAT_ID"), action="typing")
+                    time.sleep(600)  # Mantém ativo a cada 10 minutos
+                except Exception as e:
+                    print(f"Erro no Keep-Alive: {e}")
+                    time.sleep(60)  # Tenta novamente após 1 minuto
+
+        threading.Thread(target=keep_alive, daemon=True).start()
+
     def start(self):
+        self.start_keep_alive()
         self.bot.polling()
