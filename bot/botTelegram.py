@@ -34,6 +34,13 @@ class TelegramBot:
                 print(e)
                 self.bot.send_message(mensagem.chat.id, self.bot_message["mensagem_erro"])
 
+        
+        @self.bot.message_handler(commands=["get_chat_id"])
+        def send_chat_id(message):
+            chat_id = message.chat.id
+            self.bot.reply_to(message, f"Seu chat ID é: {chat_id}")
+
+
         @self.bot.message_handler(commands=["moedas"])
         def moedas(mensagem):
             try:
