@@ -2,6 +2,8 @@ import telebot
 import json
 from dotenv import load_dotenv
 import os
+import threading
+import time
 import re
 from .coinAPI_factory import CoinsAPIFactory
 from .formatters.message_formatter import MessageFormatter, ConversionCalculator
